@@ -41,33 +41,34 @@
         .track-item.active { border-left: 3px solid #ff5500; background: rgba(255, 85, 0, 0.05); }
         .track-item.active .track-title { color: #ff5500; font-weight: 600; }
         
-        /* Custom Range Slider (Progress Bar) */
+        /* Premium Custom Range Slider (Progress Bar & Volume Bar) */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
-            background: transparent;
-        }
-        input[type=range]:focus { outline: none; }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 3px;
-            cursor: pointer;
-            background: #e2e8f0;
+            height: 4px;
+            background: linear-gradient(#ff5500, #ff5500) 0% 0% / var(--progress, 0%) 100% no-repeat #e2e8f0;
             border-radius: 2px;
+            outline: none;
+            cursor: pointer;
         }
-        .dark input[type=range]::-webkit-slider-runnable-track { background: #334155; }
+        .dark input[type=range] {
+            background-color: #334155;
+        }
         input[type=range]::-webkit-slider-thumb {
-            height: 10px;
-            width: 10px;
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
             border-radius: 50%;
             background: #ff5500;
             cursor: pointer;
-            -webkit-appearance: none;
-            margin-top: -3.5px;
-            box-shadow: 0 0 3px rgba(0,0,0,0.3);
+            box-shadow: 0 0 4px rgba(0,0,0,0.4);
+            border: 2px solid #fff;
             transition: transform 0.1s;
         }
-        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.3); }
+        .dark input[type=range]::-webkit-slider-thumb {
+            border-color: #181818;
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
         /* SoundCloud Style Text Blocks */
         .sc-text-block {
@@ -121,7 +122,7 @@
             <!-- API Warning -->
             <div id="apiWarning" class="hidden m-2 sm:m-0 sm:mb-2 text-xs text-amber-800 dark:text-amber-200 bg-amber-100 dark:bg-amber-900/30 p-2 rounded border border-amber-200 dark:border-amber-800 flex items-center gap-2 flex-none">
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                <div><strong>Missing API Key:</strong> Add Google Drive API key.</div>
+                <div><strong>API Key missing hai:</strong> Code mein Google Drive API key add karein.</div>
             </div>
 
             <!-- Main Card Container -->
@@ -158,16 +159,16 @@
                             </div>
                             <div class="flex flex-col items-start gap-[2px] mt-2 sm:mt-5">
                                 <h1 class="sc-text-block text-base sm:text-xl font-extrabold tracking-tight uppercase">Bhajan Anand</h1>
-                                <p class="sc-text-block text-[10px] sm:text-[11px] font-medium text-gray-200">Bhajan Anand Official</p>
+                                <p class="sc-text-block text-[10px] sm:text-[11px] font-medium text-gray-200">Stream aur Download 100% Free</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Filter Tabs -->
                     <div class="flex gap-4 sm:gap-6 border-b border-gray-200 dark:border-gray-800 overflow-x-auto custom-scrollbar flex-none px-4 pt-2 pb-0">
-                        <button id="tabAll" onclick="switchTab('all')" class="pb-2 text-sm sm:text-base font-bold border-b-2 border-brand text-brand whitespace-nowrap transition-colors">All</button>
+                        <button id="tabAll" onclick="switchTab('all')" class="pb-2 text-sm sm:text-base font-bold border-b-2 border-brand text-brand whitespace-nowrap transition-colors">All Bhajans</button>
                         <button id="tabFav" onclick="switchTab('fav')" class="pb-2 text-sm sm:text-base font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 whitespace-nowrap transition-colors">Favorites</button>
-                        <button id="tabPlaylists" onclick="switchTab('playlists')" class="pb-2 text-sm sm:text-base font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 whitespace-nowrap transition-colors">Playlists</button>
+                        <button id="tabPlaylists" onclick="switchTab('playlists')" class="pb-2 text-sm sm:text-base font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 whitespace-nowrap transition-colors">My Playlists</button>
                     </div>
                 </div>
 
@@ -181,7 +182,7 @@
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         <p class="font-medium text-gray-500 dark:text-gray-400 text-xs text-center px-4 leading-relaxed">
-                            Please wait, loading... <br/> Getting Bhajan list. Heavy list so please wait.
+                            Kripya pratiksha karein... <br/> Bhajan list load ho rahi hai. Badi list hai isliye samay lag sakta hai.
                         </p>
                     </div>
 
@@ -222,7 +223,7 @@
                 <!-- Mobile Track Info & Buttons -->
                 <div class="flex w-full sm:w-1/3 justify-between items-center sm:hidden">
                     <div class="flex items-center gap-1 overflow-hidden">
-                        <div id="playerTrackNameMobile" class="text-xs font-bold text-gray-800 dark:text-white truncate">No Bhajan selected</div>
+                        <div id="playerTrackNameMobile" class="text-xs font-bold text-gray-800 dark:text-white truncate">Koi Bhajan select nahi kiya</div>
                         <button onclick="togglePlayerFavorite(event)" class="playerFavBtn text-gray-300 hover:text-brand transition shrink-0 ml-1 hidden">
                             <svg class="playerFavIcon w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                         </button>
@@ -257,7 +258,7 @@
                 <div class="flex-grow w-full flex flex-col justify-center">
                     <div class="hidden sm:flex justify-between items-end mb-1 px-1">
                         <div class="flex items-center gap-2 overflow-hidden w-full">
-                            <div id="playerTrackNameDesktop" class="text-sm font-bold text-gray-800 dark:text-white truncate">No Bhajan selected</div>
+                            <div id="playerTrackNameDesktop" class="text-sm font-bold text-gray-800 dark:text-white truncate">Koi Bhajan select nahi kiya</div>
                             <button onclick="togglePlayerFavorite(event)" class="playerFavBtn text-gray-300 hover:text-brand transition shrink-0 ml-1 hidden">
                                 <svg class="playerFavIcon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                             </button>
@@ -276,19 +277,20 @@
                         <span class="durationDisplay">0:00</span>
                     </div>
 
-                    <div class="w-full relative flex items-center h-3 group">
-                        <div class="absolute left-0 h-[3px] bg-brand rounded-l-full pointer-events-none z-10" id="progressFill" style="width: 0%;"></div>
-                        <input type="range" id="progressBar" value="0" min="0" max="100" class="w-full z-20 m-0">
+                    <!-- Clean Gradient Progress Bar -->
+                    <div class="w-full flex items-center group py-1">
+                        <input type="range" id="progressBar" value="0" min="0" max="100" class="w-full m-0" style="--progress: 0%;">
                     </div>
                 </div>
                 
-                <!-- Volume Control -->
-                <div class="hidden sm:flex items-center gap-2 shrink-0 w-24 ml-2">
+                <!-- Premium Volume Control -->
+                <div class="hidden sm:flex items-center gap-2 shrink-0 w-28 ml-2">
                     <button id="muteBtn" onclick="toggleMute()" class="text-gray-400 hover:text-brand transition outline-none p-1" title="Mute/Unmute">
                         <svg id="volIconHigh" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                         <svg id="volIconMuted" class="w-4 h-4 hidden text-brand" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
                     </button>
-                    <input type="range" id="volumeBar" min="0" max="1" step="0.01" value="1" class="w-full z-20 m-0">
+                    <!-- Clean Gradient Volume Bar -->
+                    <input type="range" id="volumeBar" min="0" max="1" step="0.01" value="1" class="w-full m-0" style="--progress: 100%;">
                 </div>
                 
             </div>
@@ -297,7 +299,7 @@
 
     <!-- Noob Warning Message (Screen ke upar) -->
     <div id="noobWarning" class="fixed top-10 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-3 rounded-full font-bold shadow-2xl z-[9999] opacity-0 pointer-events-none transition-opacity duration-300">
-        This is not for you noob!
+        Yeh tumhare liye nahi hai noob!
     </div>
 
     <!-- Modals (Bookmark & Playlist) -->
@@ -307,12 +309,12 @@
                 <div class="w-12 h-12 bg-orange-50 dark:bg-orange-900/20 text-brand rounded-full flex items-center justify-center mx-auto mb-3">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                 </div>
-                <h2 class="text-lg font-bold mb-1 text-gray-900 dark:text-white">Save This App!</h2>
+                <h2 class="text-lg font-bold mb-1 text-gray-900 dark:text-white">Is App ko Save Karein!</h2>
                 <p class="text-gray-600 dark:text-gray-400 text-xs mb-4" id="bookmarkInstructions">
-                    Bookmark this page so you never lose your favorite Bhajans.
+                    Is page ko bookmark karein taaki aap apne pasandida Bhajans kabhi na khoyen.
                 </p>
                 <button onclick="closeBookmarkModal()" class="w-full bg-brand text-white text-sm font-bold py-2 rounded shadow hover:bg-brand-dark transition">
-                    Got it, Thanks!
+                    Theek hai!
                 </button>
             </div>
         </div>
@@ -321,11 +323,11 @@
     <div id="addToPlaylistModal" class="fixed inset-0 modal-overlay z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-[#181818] rounded-xl p-5 max-w-[320px] w-full shadow-2xl transform scale-95 transition-transform duration-300 border border-gray-200 dark:border-gray-800" id="playlistModalContent">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="text-base font-bold text-gray-900 dark:text-white">Add to Playlist</h2>
+                <h2 class="text-base font-bold text-gray-900 dark:text-white">Playlist me add karein</h2>
                 <button onclick="closePlaylistModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
             
-            <p class="text-xs text-gray-500 dark:text-gray-400 truncate mb-3" id="modalTrackName">Track Name</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 truncate mb-3" id="modalTrackName">Bhajan ka naam</p>
             <input type="hidden" id="modalTrackId">
 
             <div id="existingPlaylistsList" class="flex flex-col gap-1.5 mb-3 max-h-32 overflow-y-auto custom-scrollbar pr-1">
@@ -333,9 +335,9 @@
             </div>
 
             <div class="border-t border-gray-200 dark:border-gray-800 pt-3">
-                <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Create New Playlist</p>
+                <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Nayi Playlist banayein</p>
                 <div class="flex gap-2">
-                    <input type="text" id="newPlaylistName" placeholder="Name..." class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded px-2 py-1.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-brand">
+                    <input type="text" id="newPlaylistName" placeholder="Naam..." class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded px-2 py-1.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-brand">
                     <button onclick="createNewPlaylistAndAdd()" class="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-3 py-1.5 rounded text-xs font-bold shadow hover:opacity-80 transition">Add</button>
                 </div>
             </div>
@@ -391,8 +393,8 @@
         });
 
         // Console me bada sa warning message
-        console.log("%cThis is not for you noob!", "color: red; font-size: 40px; font-weight: bold; background: black; padding: 20px; border-radius: 10px; border: 2px solid red;");
-        console.log("%cStop looking around and listen to Bhajans!", "color: white; font-size: 20px; background: #ff5500; padding: 10px; border-radius: 5px;");
+        console.log("%cYeh tumhare liye nahi hai noob!", "color: red; font-size: 40px; font-weight: bold; background: black; padding: 20px; border-radius: 10px; border: 2px solid red;");
+        console.log("%cChup chap Bhajans suno, code mat dekho!", "color: white; font-size: 20px; background: #ff5500; padding: 10px; border-radius: 5px;");
 
         // Anti-Inspect / DevTools Trap (Browser menu se open karne par trap karega)
         setInterval(function() {
@@ -403,7 +405,7 @@
                 // Agar execution ko rukne me > 100ms lag gaye, matlab DevTools open hai
                 // Pura page destroy kar do aur warning dikhao!
                 document.getElementById('appWrapper').innerHTML = '';
-                document.getElementById('mainBody').innerHTML = '<div class="flex items-center justify-center h-screen bg-red-600 text-white text-2xl sm:text-4xl font-bold uppercase text-center p-4">This is not for you noob!</div>';
+                document.getElementById('mainBody').innerHTML = '<div class="flex items-center justify-center h-screen bg-red-600 text-white text-2xl sm:text-4xl font-bold uppercase text-center p-4">Yeh tumhare liye nahi hai noob!</div>';
             }
         }, 100);
 
@@ -458,7 +460,6 @@
         const durEls = document.querySelectorAll('.durationDisplay');
         
         const progressBar = document.getElementById('progressBar');
-        const progressFill = document.getElementById('progressFill');
         const iconLoopAll = document.getElementById('iconLoopAll');
         const iconLoopOne = document.getElementById('iconLoopOne');
         const shuffleBtn = document.getElementById('shuffleBtn');
@@ -489,10 +490,10 @@
                     const isIOS = /iphone|ipad|ipod/.test(ua);
                     const isAndroid = ua.includes('android');
 
-                    if (isIOS) instructions.innerHTML = "Tap <b>Share</b> icon below and select <b>'Add to Home Screen'</b>.";
-                    else if (isAndroid) instructions.innerHTML = "Tap <b>Menu (3 dots)</b> and select <b>'Add to Home screen'</b>.";
-                    else if (isMac) instructions.innerHTML = "Press <kbd class='bg-gray-100 dark:bg-gray-800 px-1 rounded border dark:border-gray-700'>Cmd (⌘) + D</kbd> to bookmark.";
-                    else instructions.innerHTML = "Press <kbd class='bg-gray-100 dark:bg-gray-800 px-1 rounded border dark:border-gray-700'>Ctrl + D</kbd> to bookmark.";
+                    if (isIOS) instructions.innerHTML = "Neeche <b>Share</b> icon dabayein aur <b>'Add to Home Screen'</b> chunein.";
+                    else if (isAndroid) instructions.innerHTML = "Browser me <b>Menu (3 dots)</b> dabayein aur <b>'Add to Home screen'</b> chunein.";
+                    else if (isMac) instructions.innerHTML = "Bookmark karne ke liye <kbd class='bg-gray-100 dark:bg-gray-800 px-1 rounded border dark:border-gray-700'>Cmd (⌘) + D</kbd> dabayein.";
+                    else instructions.innerHTML = "Bookmark karne ke liye <kbd class='bg-gray-100 dark:bg-gray-800 px-1 rounded border dark:border-gray-700'>Ctrl + D</kbd> dabayein.";
 
                     modal.classList.remove('hidden');
                     setTimeout(() => { modal.classList.remove('opacity-0'); content.classList.remove('scale-95'); }, 10);
@@ -519,7 +520,7 @@
                 processData(data);
             } catch (error) {
                 console.error('Failed:', error);
-                if(playlistEl) playlistEl.innerHTML = `<li class="p-3 text-center text-xs text-red-500">Error Loading. Check script permissions.</li>`;
+                if(playlistEl) playlistEl.innerHTML = `<li class="p-3 text-center text-xs text-red-500">Error Loading. Script permissions check karein.</li>`;
             }
             showBookmarkModal();
         }
@@ -595,7 +596,7 @@
             if(!playlistEl) return;
 
             if (tracks.length === 0) {
-                playlistEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400"><p>${currentMode === 'fav' ? 'No favorites yet.' : 'No Bhajans found.'}</p></div>`;
+                playlistEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400"><p>${currentMode === 'fav' ? 'Koi favorite nahi mila.' : 'Koi Bhajan nahi mila.'}</p></div>`;
                 return;
             }
 
@@ -641,11 +642,12 @@
                 favBtn.onclick = (e) => toggleFavorite(e, track.url);
                 favBtn.innerHTML = `<svg class="w-4 h-4" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>`;
 
+                // Mobile me hidden hata diya, ab direct dikhega a element par!
                 const downloadBtn = document.createElement('a');
                 downloadBtn.href = track.url;
                 downloadBtn.download = track.name + '.mp3';
                 downloadBtn.target = '_blank';
-                downloadBtn.className = 'p-1.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors hidden sm:block';
+                downloadBtn.className = 'p-1.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors';
                 downloadBtn.onclick = (e) => e.stopPropagation();
                 downloadBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>`;
 
@@ -668,7 +670,7 @@
             if(!playlistEl) return;
 
             if (playlistNames.length === 0) {
-                playlistEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400"><p>No playlists created yet.</p></div>`;
+                playlistEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400"><p>Koi playlist abhi tak banayi nahi hai.</p></div>`;
                 return;
             }
 
@@ -686,7 +688,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-bold text-gray-800 dark:text-gray-100">${name}</p>
-                            <p class="text-[10px] text-gray-500">${count} Tracks</p>
+                            <p class="text-[10px] text-gray-500">${count} Bhajans</p>
                         </div>
                     </div>
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
@@ -706,7 +708,7 @@
         }
 
         function deleteCurrentPlaylist() {
-            if(confirm(`Are you sure you want to delete the playlist "${activePlaylistName}"?`)) {
+            if(confirm(`Kya aap playlist "${activePlaylistName}" delete karna chahte hain?`)) {
                 delete userPlaylists[activePlaylistName];
                 localStorage.setItem('cloudPlayerPlaylists', JSON.stringify(userPlaylists));
                 switchTab('playlists');
@@ -736,7 +738,7 @@
                     listDiv.appendChild(btn);
                 });
             } else {
-                listDiv.innerHTML = '<p class="text-[10px] text-gray-400 italic">No playlists yet.</p>';
+                listDiv.innerHTML = '<p class="text-[10px] text-gray-400 italic">Koi playlist nahi hai.</p>';
             }
 
             modal.classList.remove('hidden');
@@ -755,8 +757,8 @@
         function createNewPlaylistAndAdd() {
             const name = document.getElementById('newPlaylistName').value.trim();
             const trackId = document.getElementById('modalTrackId').value;
-            if(!name) return alert("Please enter a name.");
-            if(userPlaylists[name]) return alert("Playlist already exists.");
+            if(!name) return alert("Kripya naam enter karein.");
+            if(userPlaylists[name]) return alert("Playlist pehle se hai.");
             userPlaylists[name] = [trackId];
             localStorage.setItem('cloudPlayerPlaylists', JSON.stringify(userPlaylists));
             closePlaylistModal();
@@ -803,7 +805,7 @@
             if (playPromise !== undefined) {
                 playPromise.catch(e => {
                     if (e.name !== 'AbortError') {
-                        trackNameEls.forEach(el => { if(el) el.innerHTML = `<span class="text-red-500">Streaming Failed. Use download button.</span>`; });
+                        trackNameEls.forEach(el => { if(el) el.innerHTML = `<span class="text-red-500">Streaming Failed. Download karein.</span>`; });
                         setPlayState(false);
                     }
                 });
@@ -857,10 +859,12 @@
             audioPlayer.muted = !audioPlayer.muted;
             if (audioPlayer.muted) {
                 volumeBar.value = 0;
+                volumeBar.style.setProperty('--progress', '0%');
                 volIconHigh.classList.add('hidden');
                 volIconMuted.classList.remove('hidden');
             } else {
                 volumeBar.value = audioPlayer.volume;
+                volumeBar.style.setProperty('--progress', `${audioPlayer.volume * 100}%`);
                 volIconHigh.classList.remove('hidden');
                 volIconMuted.classList.add('hidden');
             }
@@ -871,6 +875,8 @@
                 if(!audioPlayer) return;
                 audioPlayer.volume = volumeBar.value;
                 audioPlayer.muted = false;
+                
+                volumeBar.style.setProperty('--progress', `${volumeBar.value * 100}%`);
                 
                 if (volumeBar.value === '0') {
                     volIconHigh.classList.add('hidden');
@@ -914,10 +920,12 @@
 
             audioPlayer.addEventListener('timeupdate', () => {
                 timeEls.forEach(el => el.textContent = formatTime(audioPlayer.currentTime));
-                if(progressBar) progressBar.value = audioPlayer.currentTime;
-                if (audioPlayer.duration > 0 && progressFill) {
-                    const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-                    progressFill.style.width = `${percent}%`;
+                if(progressBar) {
+                    progressBar.value = audioPlayer.currentTime;
+                    if (audioPlayer.duration > 0) {
+                        const percent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                        progressBar.style.setProperty('--progress', `${percent}%`);
+                    }
                 }
             });
         }
@@ -931,9 +939,10 @@
 
         if(progressBar) {
             progressBar.addEventListener('input', () => {
-                if(audioPlayer && audioPlayer.src) {
+                if(audioPlayer && audioPlayer.src && audioPlayer.duration) {
                     audioPlayer.currentTime = progressBar.value;
-                    if(progressFill) progressFill.style.width = `${(progressBar.value / audioPlayer.duration) * 100}%`;
+                    const percent = (progressBar.value / audioPlayer.duration) * 100;
+                    progressBar.style.setProperty('--progress', `${percent}%`);
                 }
             });
         }
