@@ -170,6 +170,14 @@
                         <button id="tabFav" onclick="switchTab('fav')" class="pb-2 text-sm sm:text-base font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 whitespace-nowrap transition-colors">Favorites</button>
                         <button id="tabPlaylists" onclick="switchTab('playlists')" class="pb-2 text-sm sm:text-base font-bold border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 whitespace-nowrap transition-colors">My Playlists</button>
                     </div>
+
+                    <!-- Search Bar -->
+                    <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-[#181818] flex-none">
+                        <div class="relative">
+                            <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <input type="text" id="searchInput" placeholder="Search Bhajans..." class="w-full bg-gray-100 dark:bg-gray-800 border border-transparent dark:border-gray-700 text-gray-900 dark:text-white text-xs sm:text-sm rounded-full pl-9 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand transition-all placeholder-gray-500">
+                        </div>
+                    </div>
                 </div>
 
                 <!-- SCROLLABLE LIST AREA -->
@@ -469,6 +477,8 @@
         const playerFavBtns = document.querySelectorAll('.playerFavBtn');
         const playerFavIcons = document.querySelectorAll('.playerFavIcon');
         const playerAddBtns = document.querySelectorAll('.playerAddBtn');
+        
+        const searchInput = document.getElementById('searchInput');
 
         if (!GOOGLE_API_KEY || GOOGLE_API_KEY === 'YOUR_API_KEY_HERE') {
             if(apiWarning) apiWarning.classList.remove('hidden');
@@ -532,6 +542,13 @@
         function switchTab(mode) {
             currentMode = mode;
             if(playlistHeader) playlistHeader.classList.add('hidden'); 
+            
+            // Clear search input on tab switch
+            if(searchInput) {
+                searchInput.value = '';
+                searchInput.placeholder = mode === 'playlists' ? 'Search Playlists...' : 'Search Bhajans...';
+            }
+
             const tabs = ['tabAll', 'tabFav', 'tabPlaylists'];
             tabs.forEach(tab => {
                 const el = document.getElementById(tab);
@@ -658,16 +675,16 @@
             });
         }
 
-        function renderPlaylistsView() {
+        function renderPlaylistsView(filteredNames = null) {
             if(loader) loader.classList.add('hidden');
             if(playlistHeader) playlistHeader.classList.add('hidden');
-            const playlistNames = Object.keys(userPlaylists);
+            const playlistNames = filteredNames || Object.keys(userPlaylists);
             if(trackCount) trackCount.textContent = playlistNames.length;
 
             if(!playlistEl) return;
 
             if (playlistNames.length === 0) {
-                playlistEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400"><p>No playlists created yet.</p></div>`;
+                playlistEl.innerHTML = `<div class="text-center py-10 text-xs text-gray-400"><p>No playlists found.</p></div>`;
                 return;
             }
 
@@ -940,6 +957,21 @@
                     audioPlayer.currentTime = progressBar.value;
                     const percent = (progressBar.value / audioPlayer.duration) * 100;
                     progressBar.style.setProperty('--progress', `${percent}%`);
+                }
+            });
+        }
+        
+        if(searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                
+                if (currentMode === 'playlists') {
+                    const allNames = Object.keys(userPlaylists);
+                    const filtered = allNames.filter(name => name.toLowerCase().includes(query));
+                    renderPlaylistsView(filtered);
+                } else {
+                    const filtered = currentDisplayTracks.filter(track => track.name.toLowerCase().includes(query));
+                    renderPlaylist(filtered);
                 }
             });
         }
