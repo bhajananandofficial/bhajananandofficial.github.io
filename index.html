@@ -332,7 +332,7 @@
         </div>
     </div>
 
-    <!-- Advanced Share Modal to fix user gesture timeout -->
+    <!-- Advanced Share Modal -->
     <div id="shareModal" class="fixed inset-0 modal-overlay z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
         <div class="bg-white dark:bg-[#181818] rounded-xl p-5 max-w-[320px] w-full shadow-2xl transform scale-95 transition-transform duration-300 border border-gray-200 dark:border-gray-800">
             <div class="flex justify-between items-center mb-3">
@@ -346,18 +346,30 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <p class="text-xs text-gray-500">Generating short link...</p>
+                <p class="text-xs text-gray-500">Generating short links...</p>
             </div>
 
             <div id="shareContent" class="hidden">
-                <div class="flex items-center gap-2 mb-4">
-                    <input type="text" id="shareLinkInput" readonly class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded px-2 py-1.5 text-xs text-gray-900 dark:text-white focus:outline-none">
-                    <button onclick="copyShareLink()" class="bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-gray-300 dark:hover:bg-gray-700 transition">Copy</button>
+                <div class="mb-2 flex gap-2">
+                    <div class="flex-grow">
+                        <p class="text-[9px] font-bold uppercase tracking-wider text-gray-500 mb-1">Play Link</p>
+                        <input type="text" id="sharePlayLinkInput" readonly class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded px-2 py-1.5 text-xs text-gray-900 dark:text-white focus:outline-none">
+                    </div>
                 </div>
-                <button onclick="nativeShareLink()" class="w-full bg-brand text-white text-sm font-bold py-2 rounded shadow hover:bg-brand-dark transition flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-                    Share via App
-                </button>
+                <div class="mb-4 flex gap-2">
+                    <div class="flex-grow">
+                        <p class="text-[9px] font-bold uppercase tracking-wider text-gray-500 mb-1">Download Link</p>
+                        <input type="text" id="shareDlLinkInput" readonly class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded px-2 py-1.5 text-xs text-gray-900 dark:text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="copyShareLink()" class="flex-1 bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-white px-3 py-2 rounded shadow text-xs font-bold hover:bg-gray-300 dark:hover:bg-gray-700 transition">Copy All</button>
+                    <button onclick="nativeShareLink()" class="flex-1 bg-brand text-white text-xs font-bold py-2 rounded shadow hover:bg-brand-dark transition flex items-center justify-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                        Share App
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -494,7 +506,7 @@
         let pendingSharedTrackIndex = -1;
 
         // Share State
-        let activeShareUrl = '';
+        let activeShareText = '';
         let activeShareTitle = '';
 
         let favorites = JSON.parse(localStorage.getItem('cloudPlayerFavs') || '[]');
@@ -707,14 +719,15 @@
         function openPlayerPlaylistModal(e) { if(currentTrackObj) openPlaylistModal(currentTrackObj); }
 
         // ==========================================
-        // Smart Sharing Features (Solves Gesture Error)
+        // Smart Sharing Features (Play Link + Download Link)
         // ==========================================
         async function openShareModal(track) {
             const modal = document.getElementById('shareModal');
             const trackNameTitle = document.getElementById('shareTrackNameTitle');
             const loadingDiv = document.getElementById('shareLoading');
             const contentDiv = document.getElementById('shareContent');
-            const linkInput = document.getElementById('shareLinkInput');
+            const playLinkInput = document.getElementById('sharePlayLinkInput');
+            const dlLinkInput = document.getElementById('shareDlLinkInput');
             
             activeShareTitle = track.name;
             trackNameTitle.textContent = track.name;
@@ -727,27 +740,37 @@
             
             const trackId = getTrackId(track.url);
             
-            // Hardcode the GitHub Pages URL so it always generates the correct share link
-            let shareUrl = 'https://bhajananandofficial.github.io/?track=' + trackId;
+            const playUrlLong = 'https://bhajananandofficial.github.io/?track=' + trackId;
+            const dlUrlLong = `https://drive.google.com/uc?export=download&id=${trackId}`;
+
+            let playUrlShort = playUrlLong;
+            let dlUrlShort = dlUrlLong;
 
             try {
-                // Using is.gd API via CORS proxy for free unlimited short links
-                const isgdApiUrl = `https://is.gd/create.php?format=simple&url=${encodeURIComponent(shareUrl)}`;
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(isgdApiUrl)}`;
-                const response = await fetch(proxyUrl);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.contents && data.contents.startsWith('http')) {
-                        shareUrl = data.contents.trim();
-                    }
+                // Shorten Play URL via is.gd
+                const playProxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(playUrlLong)}`)}`;
+                const playRes = await fetch(playProxyUrl);
+                if (playRes.ok) {
+                    const data = await playRes.json();
+                    if (data.contents && data.contents.startsWith('http')) playUrlShort = data.contents.trim();
+                }
+
+                // Shorten Download URL via is.gd
+                const dlProxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://is.gd/create.php?format=simple&url=${encodeURIComponent(dlUrlLong)}`)}`;
+                const dlRes = await fetch(dlProxyUrl);
+                if (dlRes.ok) {
+                    const data = await dlRes.json();
+                    if (data.contents && data.contents.startsWith('http')) dlUrlShort = data.contents.trim();
                 }
             } catch (error) {
                 console.warn("Shortener API failed", error);
             }
             
-            activeShareUrl = shareUrl;
-            linkInput.value = shareUrl;
+            playLinkInput.value = playUrlShort;
+            dlLinkInput.value = dlUrlShort;
+
+            // Combine both for native sharing
+            activeShareText = `Listen to "${track.name}" on Bhajan Anand!\n\n🎵 Play Online: ${playUrlShort}\n⬇️ Direct Download: ${dlUrlShort}`;
             
             loadingDiv.classList.add('hidden');
             contentDiv.classList.remove('hidden');
@@ -764,7 +787,7 @@
         // iFrame Compatible Fallback Copy
         function copyShareLink() {
             var textArea = document.createElement("textarea");
-            textArea.value = activeShareUrl;
+            textArea.value = activeShareText;
             textArea.style.top = "0";
             textArea.style.left = "0";
             textArea.style.position = "fixed";
@@ -773,7 +796,7 @@
             textArea.select();
             try {
                 document.execCommand('copy');
-                showToast("Link copied to clipboard!");
+                showToast("Both links copied!");
             } catch (err) {
                 console.error('Fallback: Oops, unable to copy', err);
                 showToast("Failed to copy link.");
@@ -786,8 +809,7 @@
                 try {
                     await navigator.share({
                         title: activeShareTitle,
-                        text: `Listen to "${activeShareTitle}" on Bhajan Anand!`,
-                        url: activeShareUrl 
+                        text: activeShareText
                     });
                 } catch(e) {
                     console.error(e);
@@ -856,7 +878,7 @@
                 favBtn.innerHTML = `<svg class="w-4 h-4" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>`;
 
                 const downloadBtn = document.createElement('a');
-                downloadBtn.href = track.url;
+                downloadBtn.href = `https://drive.google.com/uc?export=download&id=${trackId}`;
                 downloadBtn.download = track.name + '.mp3';
                 downloadBtn.target = '_blank';
                 downloadBtn.className = 'p-1.5 rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors';
@@ -1003,6 +1025,7 @@
             const trackId = getTrackId(track.url);
             let streamUrl = track.url;
 
+            // Original Stable Playback Logic Restored
             if(streamUrl.includes('drive.google.com') && GOOGLE_API_KEY && GOOGLE_API_KEY !== 'YOUR_API_KEY_HERE') {
                 streamUrl = `https://www.googleapis.com/drive/v3/files/${trackId}?alt=media&key=${GOOGLE_API_KEY}`;
             } else if(streamUrl.includes('drive.google.com')) {
@@ -1039,7 +1062,6 @@
             if (playPromise !== undefined) {
                 playPromise.catch(e => {
                     if (e.name === 'NotAllowedError') {
-                        // User tap kiye bina autoplay block
                         setPlayState(false);
                     } else if (e.name !== 'AbortError') {
                         trackNameEls.forEach(el => { if(el) el.innerHTML = `<span class="text-red-500">Streaming Failed. Use download button.</span>`; });
