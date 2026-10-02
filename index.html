@@ -489,7 +489,7 @@
         }
 
         // Config
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbzREpS-tprWk2cq4zpOPbqvYFAMZv8LSfwEQFZpPrCzcoz3_1TyUmMp5GyxcZEp8QmnfA/exec';;
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbwhBu1wu_4TbrrXzb90p-gBhtEFmatsePy1RY2ph7fqieFWqcGFyOcl4Yc7CA7S0SPxhw/exec';;
         const GOOGLE_API_KEY = 'AIzaSyDjpPjx2cNXI_fcBCQ2ec7umUggnFyCrso';;
 
         // State
@@ -585,15 +585,79 @@
 
         // Load Data
         async function loadTracks() {
+            // Google Apps Script Web Apps can redirect their response, which may
+            // trigger CORS problems when called with fetch() from GitHub Pages.
+            // Use JSONP first, then fall back to fetch().
+            const callbackName = '__bhajanAnandCallback_' + Date.now();
+
+            const cleanup = () => {
+                const script = document.getElementById(callbackName + '_script');
+                if (script) script.remove();
+                try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
+            };
+
+            const loadWithJSONP = () => new Promise((resolve, reject) => {
+                let finished = false;
+
+                const finish = (fn, value) => {
+                    if (finished) return;
+                    finished = true;
+                    clearTimeout(timeout);
+                    cleanup();
+                    fn(value);
+                };
+
+                window[callbackName] = (data) => finish(resolve, data);
+
+                const script = document.createElement('script');
+                script.id = callbackName + '_script';
+                script.src = webAppUrl + (webAppUrl.includes('?') ? '&' : '?') +
+                             'callback=' + encodeURIComponent(callbackName);
+                script.async = true;
+
+                script.onerror = () => finish(reject, new Error('JSONP request failed'));
+
+                const timeout = setTimeout(() => {
+                    finish(reject, new Error('JSONP request timed out'));
+                }, 20000);
+
+                document.head.appendChild(script);
+            });
+
             try {
-                const response = await fetch(webAppUrl);
-                if (!response.ok) throw new Error('Network error');
-                let data = await response.json();
+                let data;
+
+                try {
+                    data = await loadWithJSONP();
+                } catch (jsonpError) {
+                    console.warn('JSONP failed, trying fetch fallback:', jsonpError);
+
+                    const response = await fetch(webAppUrl, {
+                        method: 'GET',
+                        cache: 'no-store'
+                    });
+
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+
+                    data = await response.json();
+                }
+
+                if (!Array.isArray(data)) {
+                    throw new Error('Invalid playlist response');
+                }
+
                 processData(data);
             } catch (error) {
-                console.error('Failed:', error);
-                if(playlistEl) playlistEl.innerHTML = `<li class="p-3 text-center text-xs text-red-500">Error Loading. Check script permissions.</li>`;
+                console.error('Failed to load Bhajan list:', error);
+
+                if (playlistEl) {
+                    playlistEl.innerHTML = `
+                        <li class="p-3 text-center text-xs text-red-500">
+                            Error Loading. Please check Apps Script deployment.
+                        </li>`;
+                }
             }
+
             showBookmarkModal();
         }
 
